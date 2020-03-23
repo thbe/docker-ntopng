@@ -4,7 +4,7 @@
 
 This is a Docker image to run a NTOPNG instance.
 
-This Docker image is based on the offical [Alpine](https://hub.docker.com/r/_/alpine/) image.
+This Docker image is based on the official [Ubuntu](https://hub.docker.com/_/ubuntu) image.
 
 #### Table of Contents
 
@@ -118,7 +118,7 @@ docker build --rm --no-cache -t thbe/ntopng .
 If you need a shell inside the container you can run the following command:
 
 ```
-docker exec -ti ntopng /bin/sh
+docker exec -ti ntopng /bin/bash
 ```
 
 ## Technical details

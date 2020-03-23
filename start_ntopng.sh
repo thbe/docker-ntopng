@@ -2,12 +2,13 @@
 #
 # Start docker image that provides a NTOPNG instance
 #
-# Author:       Thomas Bendler <project@bendler-net.de>
-# Date:         Sat Mar  3 17:00:51 CET 2018
+# Author:       Thomas Bendler <code@thbe.org>
+# Date:         Mon Mar 23 22:29:36 CET 2020
 #
-# Release:      v1.0
+# Release:      v1.5
 #
 # ChangeLog:    v1.0 - Initial release
+#               v1.5 - Switch to Ubuntu
 #
 
 ### Run docker instance ###

@@ -1,17 +1,18 @@
 #! /bin/sh
 #
-# Set root password and start NTOPNG instance
+# Start NTOPNG instance
 #
-# Author:       Thomas Bendler <project@bendler-net.de>
-# Date:         Sat Feb 17 21:35:23 CET 2018
+# Author:       Thomas Bendler <code@thbe.org>
+# Date:         Mon Mar 23 22:29:36 CET 2020
 #
-# Release:      v1.0
+# Release:      v1.5
 #
 # Prerequisite: This release needs a shell which could handle functions.
 #               If shell is not able to handle functions, remove the
 #               error section.
 #
 # ChangeLog:    v1.0 - Initial release
+#               v1.5 - Switch to Ubuntu
 #
 
 ### Enable debug if debug flag is true ###
@@ -37,9 +38,6 @@ export PATH=/usr/sbin:/usr/bin:/sbin:/bin
 export LC_ALL=C
 export LANG=C
 SCRIPT=$(basename ${0})
-
-### Check prerequisite ###
-if [ ! -f /.dockerenv ]; then RETURN=1; REASON="Not executed inside a Docker container, aborting!"; exit; fi
 
 ### Check if FRITZ box should be monitored ###
 if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
@@ -96,15 +94,10 @@ FRITZ box interface:  ${FRITZBOX_IFACE}
 EOF
 
 ### Start REDIS instance ###
-redis-server /etc/redis.conf
+/usr/bin/redis-server /etc/redis/redis.conf
 
 ### Start NTOPNG instance ###
-chown -R ntop:ntop /var/lib/ntopng
-NTOPNG_COMMAND="/usr/bin/ntopng --dns-mode 1 \
-                                --data-dir /var/lib/ntopng \
-                                --httpdocs-dir /usr/share/ntopng/httpdocs \
-                                --pid /var/run/ntopng/ntopng.pid \
-                                -U ntop"
+NTOPNG_COMMAND="/usr/sbin/ntopng --dns-mode 1"
 FRITZBOX_URL="http://${FRITZBOX_IP}/cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}&snaplen=&capture=Start&sid=${FRITZBOX_SID}"
 if [ ${FRITZBOX_CAPTURE} == "true" ]; then
   wget -qO- ${FRITZBOX_URL} | ${NTOPNG_COMMAND} -i -
