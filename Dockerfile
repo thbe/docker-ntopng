@@ -23,7 +23,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install nDPI and NTOPNG
 RUN apt-get clean all && apt-get update && apt-get -y dist-upgrade && \
-    apt-get -y install ntopng && apt-get clean all
+  apt-get -y install net-tools curl perl libdigest-perl-md5-perl ntopng && \
+    apt-get clean all
 
 # Copy configuration files
 COPY root /
