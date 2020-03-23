@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/docker/automated/thbe/ntopng.svg)](https://hub.docker.com/r/thbe/ntopng/builds/) [![GitHub Stars](https://img.shields.io/github/stars/thbe/docker-ntopng.svg)](https://github.com/thbe/docker-ntopng/stargazers) [![Docker Stars](https://img.shields.io/docker/stars/thbe/ntopng.svg)](https://hub.docker.com/r/thbe/ntopng) [![Docker Pulls](https://img.shields.io/docker/pulls/thbe/ntopng.svg)](https://hub.docker.com/r/thbe/ntopng)
 
-This is a Docker image to run a NTOPNG instance.
+This is a Docker image to run a NTOPNG instance. It can be used to connect to a FritzBox to capture the traffic on the router.
 
 This Docker image is based on the official [Ubuntu](https://hub.docker.com/_/ubuntu) image.
 
@@ -41,7 +41,7 @@ You can use two environment variables that will be recognized by the start scrip
 
 #### `ARG0`
 
-The first argument indicates that the NTOPNG should monitor the FRITZ box.
+The first argument indicates that the NTOPNG should monitor the FRITZ box. You need to activate the capture on the FritzBox first. Therefor use the URL [http://fritz.box/html/capture.html](http://fritz.box/html/capture.html).
 
 #### `ARG1`
 
@@ -66,7 +66,7 @@ chmod 755 start_ntopng.sh
 ./start_ntopng.sh
 ```
 
-If you want to monitor your FRITZ box you have to add the following paramter to the start script:
+If you want to monitor your FRITZ box you have to add the following parameter to the start script:
 
 ```
 wget https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh

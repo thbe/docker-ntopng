@@ -39,11 +39,10 @@ export LC_ALL=C
 export LANG=C
 SCRIPT=$(basename ${0})
 
-### Check if FRITZ box should be monitored ###
+### Check if FritzBox should be monitored ###
 if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
-  FRITZBOX_CAPTURE="true"
 
-  ### Get FRITZ box password ###
+  ### Get FritzBox capture interface (wan/lan) ###
   if [ -n "${NTOPNG_ENV_FRITZBOX_IFACE}" ]; then
     if [ "${NTOPNG_ENV_FRITZBOX_IFACE}" == "wan" ]; then
       FRITZBOX_IFACE="3-17"
@@ -52,16 +51,15 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
     fi
   fi
 
-  ### Get FRITZ box password ###
+  ### Get FritzBox password ###
   if [ -n "${NTOPNG_ENV_FRITZBOX_PASSWORD}" ]; then
     FRITZBOX_PASSWORD=${NTOPNG_ENV_FRITZBOX_PASSWORD}
   fi
 
-  ### The is the address of the FRITZ box ###
-  FRITZBOX_IP=$(nslookup fritz.box 2> /dev/null | grep dress | cut -d' ' -f3)
+  ### Request FritzBox challenge token ###
+  FRITZBOX_CHALLENGE=$(curl -s http://fritz.box/login_sid.lua |  grep -o "<Challenge>[a-z0-9]\{8\}" | cut -d'>' -f2)
 
-  FRITZBOX_SIDFILE="/tmp/fritz.sid"
-  FRITZBOX_CHALLENGE=$(curl -s http://${FRITZBOX_IP}/login_sid.lua |  grep -o "<Challenge>[a-z0-9]\{8\}" | cut -d'>' -f2)
+  ### Create FritzBox password hash ###
   FRITZBOX_HASH=$(perl -MPOSIX -e '
       use Digest::MD5 "md5_hex";
       my $ch_Pw = "$ARGV[0]-$ARGV[1]";
@@ -69,12 +67,11 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
       my $md5 = lc(md5_hex($ch_Pw));
       print $md5;
     ' -- "${FRITZBOX_CHALLENGE}" "${FRITZBOX_PASSWORD}")
-  FRITZBOX_SID=$(curl -s "http://${FRITZBOX_IP}/login_sid.lua" -d "response=${FRITZBOX_CHALLENGE}-${FRITZBOX_HASH}" \
+  FRITZBOX_SID=$(curl -s "http://fritz.box/login_sid.lua" -d "response=${FRITZBOX_CHALLENGE}-${FRITZBOX_HASH}" \
                       -d 'username=' | grep -o "<SID>[a-z0-9]\{16\}" | cut -d'>' -f2)
-else
-  FRITZBOX_CAPTURE="false"
 fi
 
+### Display NTOPNG connection parameter ###
 cat <<EOF
 
 ===========================================================
@@ -93,13 +90,13 @@ FRITZ box interface:  ${FRITZBOX_IFACE}
 
 EOF
 
-### Start REDIS instance ###
+### Start the REDIS instance ###
 /usr/bin/redis-server /etc/redis/redis.conf
 
-### Start NTOPNG instance ###
+### Start the NTOPNG instance ###
 NTOPNG_COMMAND="/usr/sbin/ntopng --dns-mode 1"
 FRITZBOX_URL="http://${FRITZBOX_IP}/cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}&snaplen=&capture=Start&sid=${FRITZBOX_SID}"
-if [ ${FRITZBOX_CAPTURE} == "true" ]; then
+if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
   wget -qO- ${FRITZBOX_URL} | ${NTOPNG_COMMAND} -i -
 else
   ${NTOPNG_COMMAND}
