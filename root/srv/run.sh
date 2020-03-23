@@ -44,7 +44,7 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
 
   ### Get FritzBox capture interface (wan/lan) ###
   if [ -n "${NTOPNG_ENV_FRITZBOX_IFACE}" ]; then
-    if [ "${NTOPNG_ENV_FRITZBOX_IFACE}" == "wan" ]; then
+    if [ "${NTOPNG_ENV_FRITZBOX_IFACE}" = "wan" ]; then
       FRITZBOX_IFACE="3-17"
     else
       FRITZBOX_IFACE="1-lan"
