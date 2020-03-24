@@ -65,7 +65,7 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
   FRITZBOX_SID=$(cat ${FRITZBOX_SIDFILE})
 
   ### Request FritzBox challenge token ###
-  FRITZBOX_CHALLENGE=$(curl -k -s http://fritz.box/login_sid.lua |  grep -o "<Challenge>[a-z0-9]\{8\}" | cut -d'>' -f 2)
+  FRITZBOX_CHALLENGE=$(curl -k -s http://fritz.box/login_sid.lua | grep -o "<Challenge>[a-z0-9]\{8\}" | cut -d'>' -f 2)
 
   ### Create FritzBox password hash ###
   FRITZBOX_HASH=$(perl -MPOSIX -e '
@@ -97,7 +97,7 @@ URL:                  http://${NTOPNG_ENV_HOST}/
 Username:             admin
 Password:             admin
 
-FRITZ box monitoring: ${FRITZBOX_CAPTURE}
+FRITZ box monitoring: ${NTOPNG_ENV_FRITZBOX_CAPTURE}
 FRITZ box interface:  ${FRITZBOX_IFACE}
 
 ===========================================================

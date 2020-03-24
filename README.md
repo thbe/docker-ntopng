@@ -6,7 +6,7 @@ This is a Docker image to run a NTOPNG instance. It can be used to connect to a 
 
 This Docker image is based on the official [Ubuntu](https://hub.docker.com/_/ubuntu) image.
 
-#### Table of Contents
+## Table of Contents
 
 - [Install Docker](https://github.com/thbe/docker-ntopng#install-docker)
 - [Download](https://github.com/thbe/docker-ntopng#download)
@@ -26,8 +26,8 @@ To use this image you have to [install Docker](https://docs.docker.com/engine/in
 
 You can get the trusted build from the [Docker Hub registry](https://hub.docker.com/r/thbe/ntopng/):
 
-```
-docker pull thbe/ntopng
+```shell
+> docker pull thbe/ntopng
 ```
 
 Alternatively, you may build the Docker image from the
@@ -41,7 +41,7 @@ You can use two environment variables that will be recognized by the start scrip
 
 #### `ARG0`
 
-The first argument indicates that the NTOPNG should monitor the FRITZ box. You need to activate the capture on the FritzBox first. Therefor use the URL [http://fritz.box/html/capture.html](http://fritz.box/html/capture.html).
+The first argument indicates that the NTOPNG should monitor the FRITZ box.
 
 #### `ARG1`
 
@@ -60,26 +60,26 @@ If this environment variable is set, the scripts inside the container will run i
 The instance can be started by the [start script](https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh)
 from GitHub:
 
-```
-wget https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh
-chmod 755 start_ntopng.sh
-./start_ntopng.sh
+```shell
+> wget https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh
+> chmod 755 start_ntopng.sh
+> ./start_ntopng.sh
 ```
 
 If you want to monitor your FRITZ box you have to add the following parameter to the start script:
 
-```
-wget https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh
-chmod 755 start_ntopng.sh
-./start_ntopng.sh "true" "lan" "secret"
+```shell
+> wget https://raw.githubusercontent.com/thbe/docker-ntopng/master/start_ntopng.sh
+> chmod 755 start_ntopng.sh
+> ./start_ntopng.sh "true" "lan" "secret"
 ```
 
 ### Check server status
 
 You can use the standard Docker commands to examine the status of the NTOPNG instance:
 
-```
-docker logs --tail 1000 --follow --timestamps ntopng
+```shell
+> docker logs --tail 1000 --follow --timestamps ntopng
 ```
 
 ## Next steps
@@ -96,8 +96,8 @@ section.
 
 Simply download the trusted build from the [Docker Hub registry](https://hub.docker.com/r/thbe/ntopng/):
 
-```
-docker pull thbe/ntopng
+```shell
+> docker pull thbe/ntopng
 ```
 
 ## Advanced usage
@@ -107,18 +107,18 @@ docker pull thbe/ntopng
 You can build the image also from source. To do this you have to clone the
 [docker-ntopng](https://github.com/thbe/docker-ntopng) repository from GitHub:
 
-```
-git clone https://github.com/thbe/docker-ntopng.git
-cd docker-ntopng
-docker build --rm --no-cache -t thbe/ntopng .
+```shell
+> git clone https://github.com/thbe/docker-ntopng.git
+> cd docker-ntopng
+> docker build --rm --no-cache -t thbe/ntopng .
 ```
 
 ### Bash shell inside container
 
 If you need a shell inside the container you can run the following command:
 
-```
-docker exec -ti ntopng /bin/bash
+```shell
+> docker exec -ti ntopng /bin/bash
 ```
 
 ## Technical details
