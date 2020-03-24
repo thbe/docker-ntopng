@@ -109,7 +109,7 @@ EOF
 
 ### Start the NTOPNG instance ###
 NTOPNG_COMMAND="/usr/sbin/ntopng"
-FRITZBOX_URL="http://fritz.box//cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}\&snaplen=\&capture=Start\&sid=${FRITZBOX_SID}"
+FRITZBOX_URL="http://fritz.box//cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}&snaplen=&capture=Start&sid=${FRITZBOX_SID}"
 if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
   wget --no-check-certificate -qO- ${FRITZBOX_URL} | ${NTOPNG_COMMAND} -i -
 else
