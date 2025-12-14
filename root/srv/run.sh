@@ -1,18 +1,15 @@
-#! /bin/sh
+#!/bin/bash
 #
 # Start NTOPNG instance
 #
 # Author:       Thomas Bendler <code@thbe.org>
 # Date:         Mon Mar 23 22:29:36 CET 2020
 #
-# Release:      v1.5
-#
-# Prerequisite: This release needs a shell which could handle functions.
-#               If shell is not able to handle functions, remove the
-#               error section.
+# Release:      v2.0
 #
 # ChangeLog:    v1.0 - Initial release
 #               v1.5 - Switch to Ubuntu
+#               v2.0 - Optimizations and fixes
 #
 
 ### Enable debug if debug flag is true ###
@@ -35,9 +32,9 @@ REASON="Finished!"
 
 ### Default values ###
 export PATH=/usr/sbin:/usr/bin:/sbin:/bin
-export LC_ALL=C
-export LANG=C
-SCRIPT=$(basename ${0})
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+SCRIPT=$(basename "${0}")
 
 ### Check if FritzBox should be monitored ###
 if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
@@ -59,10 +56,10 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
 
   ### Create FritzBox SID file ###
   FRITZBOX_SIDFILE="/tmp/fritz.sid"
-  if [ ! -f ${FRITZBOX_SIDFILE} ]; then
-    touch ${FRITZBOX_SIDFILE}
+  if [ ! -f "${FRITZBOX_SIDFILE}" ]; then
+    touch "${FRITZBOX_SIDFILE}"
   fi
-  FRITZBOX_SID=$(cat ${FRITZBOX_SIDFILE})
+  FRITZBOX_SID=$(cat "${FRITZBOX_SIDFILE}")
 
   ### Request FritzBox challenge token ###
   FRITZBOX_CHALLENGE=$(curl -k -s http://fritz.box/login_sid.lua | grep -o "<Challenge>[a-z0-9]\{8\}" | cut -d'>' -f 2)
@@ -75,13 +72,13 @@ if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
     my $md5 = lc(md5_hex($ch_Pw));
     print $md5;
   ' -- "${FRITZBOX_CHALLENGE}" "${FRITZBOX_PASSWORD}")
-  curl -k -s "http://fritz.box/login_sid.lua" -d "response=${FRITZBOX_CHALLENGE}-${FRITZBOX_HASH}" -d 'username=dslf-config' | grep -o "<SID>[a-z0-9]\{16\}" | cut -d'>' -f 2 > ${FRITZBOX_SIDFILE}
-  FRITZBOX_SID=$(cat ${FRITZBOX_SIDFILE})
+  curl -k -s "http://fritz.box/login_sid.lua" -d "response=${FRITZBOX_CHALLENGE}-${FRITZBOX_HASH}" -d 'username=dslf-config' | grep -o "<SID>[a-z0-9]\{16\}" | cut -d'>' -f 2 > "${FRITZBOX_SIDFILE}"
+  FRITZBOX_SID=$(cat "${FRITZBOX_SIDFILE}")
 
   ### Check if FritzBox authentification was successful ###
-  if [[ ${FRITZBOX_SID} =~ ^0+$ ]]; then
+  if [[ "${FRITZBOX_SID}" =~ ^0+$ ]]; then
     echo "Login failed! Fallback to normal startup"
-    unset ${NTOPNG_ENV_FRITZBOX_CAPTURE}
+    unset NTOPNG_ENV_FRITZBOX_CAPTURE
   fi
 fi
 
@@ -105,13 +102,16 @@ FRITZ box interface:  ${FRITZBOX_IFACE}
 EOF
 
 ### Start the REDIS instance ###
-/usr/bin/redis-server /etc/redis/redis.conf
+redis-server /etc/redis/redis.conf --daemonize yes
+
+### Wait for Redis to be ready ###
+sleep 2
 
 ### Start the NTOPNG instance ###
-NTOPNG_COMMAND="/usr/sbin/ntopng"
-FRITZBOX_URL="http://fritz.box//cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}&snaplen=&capture=Start&sid=${FRITZBOX_SID}"
+NTOPNG_COMMAND="ntopng"
+FRITZBOX_URL="http://fritz.box/cgi-bin/capture_notimeout?ifaceorminor=${FRITZBOX_IFACE}&snaplen=&capture=Start&sid=${FRITZBOX_SID}"
 if [ -n "${NTOPNG_ENV_FRITZBOX_CAPTURE}" ]; then
-  wget --no-check-certificate -qO- ${FRITZBOX_URL} | ${NTOPNG_COMMAND} -i -
+  exec wget --no-check-certificate -qO- "${FRITZBOX_URL}" | ${NTOPNG_COMMAND} -i -
 else
-  ${NTOPNG_COMMAND}
+  exec ${NTOPNG_COMMAND}
 fi
