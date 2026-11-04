@@ -35,7 +35,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         libdigest-perl-md5-perl \
         ntopng \
         redis-server && \
-    rm -rf /var/log/* /tmp/* /var/tmp/*
+    find /var/log -type f -delete && rm -rf /tmp/* /var/tmp/*
 
 # Copy configuration files
 COPY --chmod=755 root /
